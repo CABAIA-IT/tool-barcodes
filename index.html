@@ -40,6 +40,7 @@
 
         function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_left = '', ligne2_right = '', ligne3 = '', ligne4_left = '', ligne4_right = '' } = {}) {
             return {
+                ean_full: ean,
                 ean: ean.substring(0,12),
                 ligne1,
                 ligne2_left,
@@ -110,7 +111,7 @@
                                 <div class="w-full md:w-full">
                                     <div class="text-left text-xs bg-blue-100 w-30">
                                         <pre class="text-center leading-none p-0">{formatted_data.ligne1}</pre>
-                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right ? formatted_data.ligne2_right : formatted_data.ean)}</pre>
+                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right ? formatted_data.ligne2_right : formatted_data.ean_full)}</pre>
                                     </div>
                                 </div>
                             </div>
