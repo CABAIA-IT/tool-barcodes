@@ -6,22 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BARCODES-PRINT</title>
     <!-- Include Tailwind CSS from a CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
+    <link href="./jsbackup/tailwind.min.css" rel="stylesheet">
     <!-- Include JSBarcode library from a CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script> -->
+    <script src="./jsbackup/JsBarcode.all.min.js"></script>
     <!-- Load React and ReactDOM from CDN -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script> -->
+    <script src="./jsbackup/react.production.min.js"></script>
+    <!-- <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script> -->
+    <script src="./jsbackup/react-dom.production.min.js"></script>
     <!-- Load Babel to transpile JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <!-- <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script> -->
+    <script src="./jsbackup/babel.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> -->
+    <script src="./jsbackup/papaparse.min.js"></script>
     <style>
         @media print {
- 
-            .no-print, .no-print *
-            {
+
+            .no-print,
+            .no-print * {
                 display: none !important;
             }
+
             div,
             p {
                 page-break-inside: avoid;
@@ -31,7 +38,12 @@
 </head>
 
 <body style="font-family: monospace">
-    <input type="file" id="csvFile" class="no-print m-4" accept=".csv" />
+    <div class="no-print m-4">
+        <a href="./sample_file.csv" class="p-2">Fichier d'exemple</a>
+        <br />
+        <br />
+        <input type="file" id="csvFile" accept=".csv" />
+    </div>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -41,7 +53,7 @@
         function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_left = '', ligne2_right = '', ligne3 = '', ligne4_left = '', ligne4_right = '' } = {}) {
             return {
                 ean_full: ean,
-                ean: ean.substring(0,12),
+                ean: ean.substring(0, 12),
                 ligne1,
                 ligne2_left,
                 ligne2_right,
@@ -67,15 +79,17 @@
             // Generate a barcode using the JSBarcode library
             function generateBarcode() {
                 try {
-                    JsBarcode("#barcode"+formatted_data.ean, formatted_data.ean, {
+                    JsBarcode("#barcode" + formatted_data.ean, formatted_data.ean, {
                         format: "EAN13",
                         lineColor: "#000000",
+                        margin: 0,
                         width: 2,
                         height: 50,
-                        displayValue: true,
+                        displayValue: false,
                         fontSize: 12,
                         fontOptions: "bold",
-                        font: "monospace"
+                        font: "monospace",
+                        flat: true
                     });
                 } catch (error) {
                     console.log("Erreur impression codebarre: ", formatted_data.ean, error)
@@ -118,7 +132,7 @@
                         </div>
 
                         <div class="flex justify-center bg-gray-100">
-                            <svg id={"barcode"+formatted_data.ean} width="234px" height="84px"></svg>
+                            <svg id={"barcode" + formatted_data.ean} width="234px" height="84px"></svg>
                         </div>
                         <div class="container mx-auto">
                             <div class="flex flex-wrap">
