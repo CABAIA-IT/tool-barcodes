@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AL-BARCODE</title>
+    <!-- Include Tailwind CSS from a CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include JSBarcode library from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- Load React and ReactDOM from CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Load Babel to transpile JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        @media print {
+ 
+            .no-print, .no-print *
+            {
+                display: none !important;
+            }
+            div,
+            p {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body style="font-family: monospace">
+    <input type="file" id="csvFile" class="no-print m-4" accept=".csv" />
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        const { useEffect, useState } = React;
+
+        function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_left = '', ligne2_right = '', ligne3 = '', ligne4_left = '', ligne4_right = '' } = {}) {
+            return {
+                ean: ean.substring(0,12),
+                ligne1,
+                ligne2_left,
+                ligne2_right,
+                ligne3,
+                ligne4_left,
+                ligne4_right
+            };
+        }
+
+        function BarCode({ data }) {
+
+            const formatted_data = defaultValuesWhenAbsent(data);
+
+            useEffect(() => {
+                // Call the function to generate the barcode
+                generateBarcode();
+
+                return () => {
+                    console.log('Barcode Component unmounted');
+                };
+            }, [formatted_data]);
+
+            // Generate a barcode using the JSBarcode library
+            function generateBarcode() {
+                try {
+                    JsBarcode("#barcode"+formatted_data.ean, formatted_data.ean, {
+                        format: "EAN13",
+                        lineColor: "#000000",
+                        width: 2,
+                        height: 50,
+                        displayValue: true,
+                        fontSize: 12,
+                        fontOptions: "bold",
+                        font: "monospace"
+                    });
+                } catch (error) {
+                    console.log("Erreur impression codebarre: ", formatted_data.ean, error)
+                }
+            }
+
+            function generateString(str_left_side, str_right_side) {
+
+                const str_left_side_trimmed = str_left_side?.substring(0, 19)
+
+                const remainingLength = 35 - (str_left_side_trimmed.length + str_right_side.length);
+
+                if (remainingLength <= 0) {
+                    console.error('The total length of the two strings must be less than 50 characters.');
+                    return 'Chaine trop longue';
+                }
+
+                const placeHolderChars = '                                   ';
+                let placeHolderStr = '';
+
+                for (let i = 0; i < remainingLength; i++) {
+                    placeHolderStr += placeHolderChars.charAt(Math.floor(Math.random() * placeHolderChars.length));
+                }
+
+                return (str_left_side_trimmed + placeHolderStr + str_right_side);
+            }
+
+            return (
+                <div class="flex m-2 break-inside-avoid">
+                    <div class="bg-white border p-2 break-inside-avoid">
+                        <div class="container mx-auto">
+                            <div class="flex flex-wrap">
+                                <div class="w-full md:w-full">
+                                    <div class="text-left text-xs bg-blue-100 w-30">
+                                        <pre class="text-center leading-none p-0">{formatted_data.ligne1}</pre>
+                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right ? formatted_data.ligne2_right : formatted_data.ean)}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center bg-gray-100">
+                            <svg id={"barcode"+formatted_data.ean} width="234px" height="84px"></svg>
+                        </div>
+                        <div class="container mx-auto">
+                            <div class="flex flex-wrap">
+
+                                <div class="w-full md:w-full">
+                                    <div class="text-left text-xs bg-red-100 w-30">
+                                        <pre class="text-center leading-none">{formatted_data.ligne3}</pre>
+                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne4_left, formatted_data.ligne4_right)}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+        }
+
+        function App() {
+
+            const [barcodes_file, setBarcodesFile] = useState([]);
+
+            document.getElementById('csvFile').addEventListener('change', handleFileSelect, false);
+
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+
+                if (file) {
+                    Papa.parse(file, {
+                        header: true,
+                        complete: function (results) {
+                            console.log('CSV data:', results.data);
+                            processData(results.data);
+                        },
+                        error: function (error) {
+                            console.error('Error while parsing CSV:', error);
+                        },
+                    });
+                }
+            }
+
+            function processData(data) {
+                // Process the CSV data here
+                setBarcodesFile(data);
+            }
+            return (
+                <div className="grid grid-cols-3 gap-2">
+                    {
+                        barcodes_file.map(barcode => {
+                            return <BarCode data={barcode} />
+                        })
+                    }
+                </div>
+            );
+        }
+
+        // Render React component using createRoot
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+
+</html>
