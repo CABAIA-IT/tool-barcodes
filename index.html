@@ -22,13 +22,16 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> -->
     <script src="./jsbackup/papaparse.min.js"></script>
     <style>
+        body {
+            width: 210mm;
+            height: 297mm;
+        }
         @media print {
 
             .no-print,
             .no-print * {
                 display: none !important;
             }
-
             div,
             p {
                 page-break-inside: avoid;
@@ -65,6 +68,7 @@
 
         function BarCode({ data }) {
 
+            console.log(data)
             const formatted_data = defaultValuesWhenAbsent(data);
 
             useEffect(() => {
@@ -124,8 +128,12 @@
                             <div class="flex flex-wrap">
                                 <div class="w-full md:w-full">
                                     <div class="text-left text-xs bg-blue-100 w-30">
-                                        <pre class="text-center leading-none p-0">{formatted_data.ligne1}</pre>
-                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right ? formatted_data.ligne2_right : formatted_data.ean_full)}</pre>
+                                        {(formatted_data.ligne1=='')?
+                                            <></>:
+                                            <pre class="text-center leading-none p-0">{formatted_data.ligne1}</pre>
+                                        }
+                                        
+                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right)}</pre>
                                     </div>
                                 </div>
                             </div>
