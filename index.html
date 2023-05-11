@@ -22,9 +22,29 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> -->
     <script src="./jsbackup/papaparse.min.js"></script>
     <style>
+        .keepspaces {
+            white-space: pre;
+        }
         body {
             width: 210mm;
             height: 297mm;
+        }
+        pre {
+            white-space: pre-wrap;
+        }
+        .ligne1{
+            width: 6cm;
+            word-wrap: break-word;
+            /* font-size: 1vw; */
+        }
+        .ligne2{
+            width: 6cm;
+        }
+        .ligne3{
+            width: 6cm;
+        }
+        .ligne4{
+            width: 6cm;
         }
         @media print {
 
@@ -42,7 +62,7 @@
 
 <body style="font-family: monospace">
     <div class="no-print m-4">
-        <a href="./sample_file.csv" class="p-2">Fichier exemple</a>
+        <a href="./sample_file.csv.faux" class="p-2">Fichier exemple</a>
         <br />
         <br />
         <input type="file" id="csvFile" accept=".csv" />
@@ -89,11 +109,11 @@
                         margin: 0,
                         width: 2,
                         height: 50,
-                        displayValue: false,
+                        // displayValue: false,
                         fontSize: 12,
-                        fontOptions: "bold",
+                        // fontOptions: "bold",
                         font: "monospace",
-                        flat: true
+                        // flat: true
                     });
                 } catch (error) {
                     console.log("Erreur impression codebarre: ", formatted_data.ean, error)
@@ -102,16 +122,16 @@
 
             function generateString(str_left_side, str_right_side) {
 
-                const str_left_side_trimmed = str_left_side?.substring(0, 19)
+                const str_left_side_trimmed = str_left_side?.substring(0, 24)
 
-                const remainingLength = 35 - (str_left_side_trimmed.length + str_right_side.length);
+                const remainingLength = 36 - (str_left_side_trimmed.length + str_right_side.length);
 
                 if (remainingLength <= 0) {
                     console.error('The total length of the two strings must be less than 50 characters.');
-                    return 'Chaine trop longue';
+                    return '⬛⬛⬛';
                 }
 
-                const placeHolderChars = '                                   ';
+                const placeHolderChars = '                                        ';
                 let placeHolderStr = '';
 
                 for (let i = 0; i < remainingLength; i++) {
@@ -123,32 +143,76 @@
 
             return (
                 <div class="flex m-2 break-inside-avoid">
-                    <div class="bg-white border p-2 break-inside-avoid">
+                    <div class="bg-white border p-3 break-inside-avoid">
                         <div class="container mx-auto">
                             <div class="flex flex-wrap">
                                 <div class="w-full md:w-full">
-                                    <div class="text-left text-xs bg-blue-100 w-30">
+                                    <div class="block text-left text-xs w-30">
                                         {(formatted_data.ligne1=='')?
+                                            <>&nbsp;</>:
+                                            // <pre class="ligne1 text-center leading-none p-0">{formatted_data.ligne1}</pre>
+                                            <svg viewBox="0 0 100 5">
+                                                <text
+                                                    x="50%" y="50%" dominant-baseline="middle"
+                                                    text-anchor="middle" font-size="5"
+                                                    textLength={(formatted_data.ligne1.length>30)?"100":"auto"} lengthAdjust="spacing"
+                                                    >
+                                                    {formatted_data.ligne1}
+                                                </text>
+                                            </svg>
+                                        }
+                                        {(formatted_data.ligne2_left=='' && formatted_data.ligne2_right=='')?
                                             <></>:
-                                            <pre class="text-center leading-none p-0">{formatted_data.ligne1}</pre>
+                                            <svg viewBox="0 0 100 5">
+                                                <text class="keepspaces"
+                                                    x="50%" y="50%" dominant-baseline="middle"
+                                                    text-anchor="middle" font-size="5"
+                                                    textLength={(generateString(formatted_data.ligne2_left, formatted_data.ligne2_right).length>30)?"100":"auto"}
+                                                    >
+                                                    {generateString(formatted_data.ligne2_left, formatted_data.ligne2_right)}
+                                                </text>
+                                            </svg>
                                         }
                                         
-                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne2_left, formatted_data.ligne2_right)}</pre>
+                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex justify-center bg-gray-100">
-                            <svg id={"barcode" + formatted_data.ean} width="234px" height="84px"></svg>
+                            <svg id={"barcode" + formatted_data.ean} width="234px" height="84px" class="my-1"></svg>
                         </div>
                         <div class="container mx-auto">
                             <div class="flex flex-wrap">
 
                                 <div class="w-full md:w-full">
-                                    <div class="text-left text-xs bg-red-100 w-30">
-                                        <pre class="text-center leading-none">{formatted_data.ligne3}</pre>
-                                        <pre class="text-center leading-none">{generateString(formatted_data.ligne4_left, formatted_data.ligne4_right)}</pre>
+                                    <div class="text-left text-xs w-30">
+                                        {(formatted_data.ligne3=='')?
+                                            <></>:
+                                            <svg viewBox="0 0 100 5">
+                                                <text
+                                                    x="50%" y="50%" dominant-baseline="middle"
+                                                    text-anchor="middle" font-size="5"
+                                                    textLength={(formatted_data.ligne3.length>30)?"100":"auto"} lengthAdjust="spacing"
+                                                    >
+                                                    {formatted_data.ligne3}
+                                                </text>
+                                            </svg>
+                                        }
+                                        {(formatted_data.ligne4_left=='' && formatted_data.ligne4_right=='')?
+                                            <>&nbsp;</>:
+                                            <svg viewBox="0 0 100 5">
+                                                <text class="keepspaces" width="100"
+                                                    x="50%" y="50%" dominant-baseline="middle"
+                                                    text-anchor="middle" font-size="5"
+                                                    textLength={(generateString(formatted_data.ligne4_left, formatted_data.ligne4_right).length>30)?"100":"auto"} lengthAdjust="spacing"
+                                                    >
+                                                    {generateString(formatted_data.ligne4_left, formatted_data.ligne4_right)}
+                                                </text>
+                                            </svg>
+                                        }
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -186,13 +250,29 @@
                 // Process the CSV data here
                 setBarcodesFile(data);
             }
+            const sample_data = {
+                "ligne1": "SHOULDERSTRAP-DUFFLE/MESSENGER-AJACCIO",
+                "ligne4_left": "CAB622WXKDXXXXXXLLQ",
+                "ligne4_right": "3701328370901",
+                "ean": "3701328370901",
+                "ligne2_left": "CAB622WXKDXXXXXXLLQAAA",
+                "ligne2_right": "3701328370901",
+                "ligne3": "MESSENGER-AJACCIO"
+            }
             return (
-                <div className="grid grid-cols-3 gap-2">
-                    {
-                        barcodes_file.map(barcode => {
-                            return <BarCode data={barcode} />
-                        })
-                    }
+                <div>
+                    <div className="no-print m-4">
+                    <h1>Exemple de rendu</h1>
+                        <BarCode data={sample_data} />
+                        <hr />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        {
+                            barcodes_file.map(barcode => {
+                                return <BarCode data={barcode} />
+                            })
+                        }
+                    </div>
                 </div>
             );
         }
