@@ -31,8 +31,8 @@
             height: 297mm;
             /* background-color: aqua; */
         }
-
-        /* .container_all {
+/* 
+        .container_all {
             width: 210mm;
             height: 297mm;
             border: 1px Solid #000000;
@@ -76,7 +76,7 @@
 </head>
 
 <body style="font-family: monospace">
-    <div>
+    <div class="container_all container mx-auto">
         <div class="no-print m-4">
             <h1 class="text-blue-600"><a href="./sample_file_straps.csv">Fichier exemple STRAPS</a></h1>
             <h1 class="text-blue-600"><a href="./sample_file_all.csv">Fichier exemple ALL</a></h1>
@@ -289,16 +289,18 @@
                 return (
                     <div>
                         <div className="no-print m-4">
+                            <div className="border p-4  w-72 rounded-lg">
                             <h1 class="text-blue-600">Exemple de rendu</h1>
-                            <div className="overflow-hidden rounded-lg bg-white shadow w-auto">
+                            <div className="overflow-hidden rounded-lg bg-white shadow w-64">
                                 <div class="flex">
                                     <div class="m-auto">
                                         <BarCode data={sample_data} />
                                     </div>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                        <div className="container_all">
+                        <div>
                             <div className="grid grid-cols-3 gap-2">
                             {
                                 barcodes_file.map(barcode => {
