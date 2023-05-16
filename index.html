@@ -25,33 +25,48 @@
         .keepspaces {
             white-space: pre;
         }
+
         body {
             width: 210mm;
             height: 297mm;
+            /* background-color: aqua; */
         }
+
+        /* .container_all {
+            width: 210mm;
+            height: 297mm;
+            border: 1px Solid #000000;
+        } */
+
         pre {
             white-space: pre-wrap;
         }
-        .ligne1{
+
+        .ligne1 {
             width: 6cm;
             word-wrap: break-word;
             /* font-size: 1vw; */
         }
-        .ligne2{
+
+        .ligne2 {
             width: 6cm;
         }
-        .ligne3{
+
+        .ligne3 {
             width: 6cm;
         }
-        .ligne4{
+
+        .ligne4 {
             width: 6cm;
         }
+
         @media print {
 
             .no-print,
             .no-print * {
                 display: none !important;
             }
+
             div,
             p {
                 page-break-inside: avoid;
@@ -61,225 +76,244 @@
 </head>
 
 <body style="font-family: monospace">
-    <div class="no-print m-4">
-        <a href="./sample_file.csv.faux" class="p-2">Fichier exemple</a>
-        <br />
-        <br />
-        <input type="file" id="csvFile" accept=".csv" />
-    </div>
-    <div id="root"></div>
+    <div>
+        <div class="no-print m-4">
+            <h1 class="text-blue-600"><a href="./sample_file_straps.csv">Fichier exemple STRAPS</a></h1>
+            <h1 class="text-blue-600"><a href="./sample_file_all.csv">Fichier exemple ALL</a></h1>
+            <br />
+            <input type="file" id="csvFile" accept=".csv" />
+            <br />
+            <br />
+            <button type="button" onclick="window.print()"
+                class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
+                </svg>
+                Imprimer
+            </button>
+        </div>
+        <div id="root"></div>
 
-    <script type="text/babel">
+        <script type="text/babel">
 
-        const { useEffect, useState } = React;
+            const { useEffect, useState } = React;
 
-        function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_left = '', ligne2_right = '', ligne3 = '', ligne4_left = '', ligne4_right = '' } = {}) {
-            return {
-                ean_full: ean,
-                ean: ean.substring(0, 12),
-                ligne1,
-                ligne2_left,
-                ligne2_right,
-                ligne3,
-                ligne4_left,
-                ligne4_right
-            };
-        }
-
-        function BarCode({ data }) {
-
-            console.log(data)
-            const formatted_data = defaultValuesWhenAbsent(data);
-
-            useEffect(() => {
-                // Call the function to generate the barcode
-                generateBarcode();
-
-                return () => {
-                    console.log('Barcode Component unmounted');
+            function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_gauche = '', ligne2_droite = '', ligne3 = '', ligne4_gauche = '', ligne4_droite = '' } = {}) {
+                return {
+                    ean_full: ean,
+                    ean: ean.substring(0, 12),
+                    ligne1,
+                    ligne2_gauche,
+                    ligne2_droite,
+                    ligne3,
+                    ligne4_gauche,
+                    ligne4_droite
                 };
-            }, [formatted_data]);
-
-            // Generate a barcode using the JSBarcode library
-            function generateBarcode() {
-                try {
-                    JsBarcode("#barcode" + formatted_data.ean, formatted_data.ean, {
-                        format: "EAN13",
-                        lineColor: "#000000",
-                        margin: 0,
-                        width: 2,
-                        height: 50,
-                        // displayValue: false,
-                        fontSize: 12,
-                        // fontOptions: "bold",
-                        font: "monospace",
-                        // flat: true
-                    });
-                } catch (error) {
-                    console.log("Erreur impression codebarre: ", formatted_data.ean, error)
-                }
             }
 
-            function generateString(str_left_side, str_right_side) {
+            function BarCode({ data }) {
 
-                const str_left_side_trimmed = str_left_side?.substring(0, 24)
+                console.log(data)
+                const formatted_data = defaultValuesWhenAbsent(data);
 
-                const remainingLength = 36 - (str_left_side_trimmed.length + str_right_side.length);
+                useEffect(() => {
+                    // Call the function to generate the barcode
+                    generateBarcode();
 
-                if (remainingLength <= 0) {
-                    console.error('The total length of the two strings must be less than 50 characters.');
-                    return '⬛⬛⬛';
+                    return () => {
+                        console.log('Barcode Component unmounted');
+                    };
+                }, [formatted_data]);
+
+                // Generate a barcode using the JSBarcode library
+                function generateBarcode() {
+                    try {
+                        JsBarcode("#barcode" + formatted_data.ean, formatted_data.ean, {
+                            format: "EAN13",
+                            lineColor: "#000000",
+                            margin: 0,
+                            width: 2,
+                            height: 50,
+                            // displayValue: false,
+                            fontSize: 12,
+                            // fontOptions: "bold",
+                            font: "monospace",
+                            // flat: true
+                        });
+                    } catch (error) {
+                        console.log("Erreur impression codebarre: ", formatted_data.ean, error)
+                    }
                 }
 
-                const placeHolderChars = '                                        ';
-                let placeHolderStr = '';
+                function generateString(str_gauche_side, str_droite_side) {
 
-                for (let i = 0; i < remainingLength; i++) {
-                    placeHolderStr += placeHolderChars.charAt(Math.floor(Math.random() * placeHolderChars.length));
+                    const str_gauche_side_trimmed = str_gauche_side?.substring(0, 24)
+
+                    const remainingLength = 36 - (str_gauche_side_trimmed.length + str_droite_side.length);
+
+                    if (remainingLength <= 0) {
+                        console.error('The total length of the two strings must be less than 50 characters.');
+                        return '⬛⬛⬛';
+                    }
+
+                    const placeHolderChars = '                                        ';
+                    let placeHolderStr = '';
+
+                    for (let i = 0; i < remainingLength; i++) {
+                        placeHolderStr += placeHolderChars.charAt(Math.floor(Math.random() * placeHolderChars.length));
+                    }
+
+                    return (str_gauche_side_trimmed + placeHolderStr + str_droite_side);
                 }
 
-                return (str_left_side_trimmed + placeHolderStr + str_right_side);
-            }
+                return (
+                    <div class="flex m-2 break-inside-avoid">
+                        <div class="bg-white border p-3 break-inside-avoid">
+                            <div class="container mx-auto">
+                                <div class="flex flex-wrap">
+                                    <div class="w-full md:w-full">
+                                        <div class="block text-left text-xs">
+                                            {(formatted_data.ligne1 == '') ?
+                                                <>&nbsp;</> :
+                                                // <pre class="ligne1 text-center leading-none p-0">{formatted_data.ligne1}</pre>
+                                                <svg viewBox="0 0 100 6">
+                                                    <text
+                                                        x="50%" y="50%" dominant-baseline="middle"
+                                                        text-anchor="middle" font-size="5"
+                                                        textLength={(formatted_data.ligne1.length > 30) ? "100" : "auto"} lengthAdjust="spacing"
+                                                    >
+                                                        {formatted_data.ligne1}
+                                                    </text>
+                                                </svg>
+                                            }
+                                            {(formatted_data.ligne2_gauche == '' && formatted_data.ligne2_droite == '') ?
+                                                <></> :
+                                                <svg viewBox="0 0 100 5">
+                                                    <text class="keepspaces"
+                                                        x="50%" y="50%" dominant-baseline="middle"
+                                                        text-anchor="middle" font-size="5"
+                                                        textLength={(generateString(formatted_data.ligne2_gauche, formatted_data.ligne2_droite).length > 30) ? "100" : "auto"}
+                                                    >
+                                                        {generateString(formatted_data.ligne2_gauche, formatted_data.ligne2_droite)}
+                                                    </text>
+                                                </svg>
+                                            }
 
-            return (
-                <div class="flex m-2 break-inside-avoid">
-                    <div class="bg-white border p-3 break-inside-avoid">
-                        <div class="container mx-auto">
-                            <div class="flex flex-wrap">
-                                <div class="w-full md:w-full">
-                                    <div class="block text-left text-xs w-30">
-                                        {(formatted_data.ligne1=='')?
-                                            <>&nbsp;</>:
-                                            // <pre class="ligne1 text-center leading-none p-0">{formatted_data.ligne1}</pre>
-                                            <svg viewBox="0 0 100 5">
-                                                <text
-                                                    x="50%" y="50%" dominant-baseline="middle"
-                                                    text-anchor="middle" font-size="5"
-                                                    textLength={(formatted_data.ligne1.length>30)?"100":"auto"} lengthAdjust="spacing"
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center">
+                                <svg id={"barcode" + formatted_data.ean} width="234px" height="84px" class="my-1"></svg>
+                            </div>
+                            <div class="container mx-auto">
+                                <div class="flex flex-wrap">
+
+                                    <div class="w-full md:w-full">
+                                        <div class="text-left text-xs w-30">
+                                            {(formatted_data.ligne3 == '') ?
+                                                <></> :
+                                                <svg viewBox="0 0 100 5">
+                                                    <text
+                                                        x="50%" y="50%" dominant-baseline="middle"
+                                                        text-anchor="middle" font-size="5"
+                                                        textLength={(formatted_data.ligne3.length > 30) ? "100" : "auto"} lengthAdjust="spacing"
                                                     >
-                                                    {formatted_data.ligne1}
-                                                </text>
-                                            </svg>
-                                        }
-                                        {(formatted_data.ligne2_left=='' && formatted_data.ligne2_right=='')?
-                                            <></>:
-                                            <svg viewBox="0 0 100 5">
-                                                <text class="keepspaces"
-                                                    x="50%" y="50%" dominant-baseline="middle"
-                                                    text-anchor="middle" font-size="5"
-                                                    textLength={(generateString(formatted_data.ligne2_left, formatted_data.ligne2_right).length>30)?"100":"auto"}
+                                                        {formatted_data.ligne3}
+                                                    </text>
+                                                </svg>
+                                            }
+                                            {(formatted_data.ligne4_gauche == '' && formatted_data.ligne4_droite == '') ?
+                                                <>&nbsp;</> :
+                                                <svg viewBox="0 0 100 5">
+                                                    <text class="keepspaces" width="100"
+                                                        x="50%" y="50%" dominant-baseline="middle"
+                                                        text-anchor="middle" font-size="5"
+                                                        textLength={(generateString(formatted_data.ligne4_gauche, formatted_data.ligne4_droite).length > 30) ? "100" : "auto"} lengthAdjust="spacing"
                                                     >
-                                                    {generateString(formatted_data.ligne2_left, formatted_data.ligne2_right)}
-                                                </text>
-                                            </svg>
-                                        }
-                                        
-                                        
+                                                        {generateString(formatted_data.ligne4_gauche, formatted_data.ligne4_droite)}
+                                                    </text>
+                                                </svg>
+                                            }
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                );
 
-                        <div class="flex justify-center bg-gray-100">
-                            <svg id={"barcode" + formatted_data.ean} width="234px" height="84px" class="my-1"></svg>
-                        </div>
-                        <div class="container mx-auto">
-                            <div class="flex flex-wrap">
+            }
 
-                                <div class="w-full md:w-full">
-                                    <div class="text-left text-xs w-30">
-                                        {(formatted_data.ligne3=='')?
-                                            <></>:
-                                            <svg viewBox="0 0 100 5">
-                                                <text
-                                                    x="50%" y="50%" dominant-baseline="middle"
-                                                    text-anchor="middle" font-size="5"
-                                                    textLength={(formatted_data.ligne3.length>30)?"100":"auto"} lengthAdjust="spacing"
-                                                    >
-                                                    {formatted_data.ligne3}
-                                                </text>
-                                            </svg>
-                                        }
-                                        {(formatted_data.ligne4_left=='' && formatted_data.ligne4_right=='')?
-                                            <>&nbsp;</>:
-                                            <svg viewBox="0 0 100 5">
-                                                <text class="keepspaces" width="100"
-                                                    x="50%" y="50%" dominant-baseline="middle"
-                                                    text-anchor="middle" font-size="5"
-                                                    textLength={(generateString(formatted_data.ligne4_left, formatted_data.ligne4_right).length>30)?"100":"auto"} lengthAdjust="spacing"
-                                                    >
-                                                    {generateString(formatted_data.ligne4_left, formatted_data.ligne4_right)}
-                                                </text>
-                                            </svg>
-                                        }
-                                        
+            function App() {
+
+                const [barcodes_file, setBarcodesFile] = useState([]);
+
+                document.getElementById('csvFile').addEventListener('change', handleFileSelect, false);
+
+                function handleFileSelect(event) {
+                    const file = event.target.files[0];
+
+                    if (file) {
+                        Papa.parse(file, {
+                            header: true,
+                            complete: function (results) {
+                                console.log('CSV data:', results.data);
+                                processData(results.data);
+                            },
+                            error: function (error) {
+                                console.error('Error while parsing CSV:', error);
+                            },
+                        });
+                    }
+                }
+
+                function processData(data) {
+                    // Process the CSV data here
+                    setBarcodesFile(data);
+                }
+                const sample_data = {
+                    "ean": "3701328370901",
+                    "ligne1": "ligne1",
+                    "ligne2_gauche": "ligne2_gauche",
+                    "ligne2_droite": "ligne2_droite",
+                    "ligne3": "ligne3",
+                    "ligne4_gauche": "ligne4_gauche",
+                    "ligne4_droite": "ligne4_droite",
+                }
+                return (
+                    <div>
+                        <div className="no-print m-4">
+                            <h1 class="text-blue-600">Exemple de rendu</h1>
+                            <div className="overflow-hidden rounded-lg bg-white shadow w-auto">
+                                <div class="flex">
+                                    <div class="m-auto">
+                                        <BarCode data={sample_data} />
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div className="container_all">
+                            <div className="grid grid-cols-3 gap-2">
+                            {
+                                barcodes_file.map(barcode => {
+                                    return <BarCode data={barcode} />
+                                })
+                            }
+                            </div>
+                        </div>
                     </div>
-                </div>
-            );
-
-        }
-
-        function App() {
-
-            const [barcodes_file, setBarcodesFile] = useState([]);
-
-            document.getElementById('csvFile').addEventListener('change', handleFileSelect, false);
-
-            function handleFileSelect(event) {
-                const file = event.target.files[0];
-
-                if (file) {
-                    Papa.parse(file, {
-                        header: true,
-                        complete: function (results) {
-                            console.log('CSV data:', results.data);
-                            processData(results.data);
-                        },
-                        error: function (error) {
-                            console.error('Error while parsing CSV:', error);
-                        },
-                    });
-                }
+                );
             }
 
-            function processData(data) {
-                // Process the CSV data here
-                setBarcodesFile(data);
-            }
-            const sample_data = {
-                "ligne1": "SHOULDERSTRAP-DUFFLE/MESSENGER-AJACCIO",
-                "ligne4_left": "CAB622WXKDXXXXXXLLQ",
-                "ligne4_right": "3701328370901",
-                "ean": "3701328370901",
-                "ligne2_left": "CAB622WXKDXXXXXXLLQAAA",
-                "ligne2_right": "3701328370901",
-                "ligne3": "MESSENGER-AJACCIO"
-            }
-            return (
-                <div>
-                    <div className="no-print m-4">
-                    <h1>Exemple de rendu</h1>
-                        <BarCode data={sample_data} />
-                        <hr />
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        {
-                            barcodes_file.map(barcode => {
-                                return <BarCode data={barcode} />
-                            })
-                        }
-                    </div>
-                </div>
-            );
-        }
-
-        // Render React component using createRoot
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    </script>
+            // Render React component using createRoot
+            ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        </script>
 </body>
 
 </html>
