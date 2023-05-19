@@ -80,6 +80,7 @@
         <div class="no-print m-4">
             <h1 class="text-blue-600"><a href="./sample_file_straps.csv">Fichier exemple STRAPS</a></h1>
             <h1 class="text-blue-600"><a href="./sample_file_all.csv">Fichier exemple ALL</a></h1>
+            <h1 class="text-blue-600"><a href="./sample_file_chaussettes.csv">Fichier exemple Chaussettes</a></h1>
             <br />
             <input type="file" id="csvFile" accept=".csv" />
             <br />
@@ -100,7 +101,16 @@
 
             const { useEffect, useState } = React;
 
-            function defaultValuesWhenAbsent({ ean = '', ligne1 = '', ligne2_gauche = '', ligne2_droite = '', ligne3 = '', ligne4_gauche = '', ligne4_droite = '' } = {}) {
+            function defaultValuesWhenAbsent({
+                    ean = '',
+                    ligne1 = '',
+                    ligne2_gauche = '',
+                    ligne2_droite = '',
+                    ligne3 = '',
+                    ligne4_gauche = '',
+                    ligne4_droite = '',
+                    composition = ''
+                } = {}) {
                 return {
                     ean_full: ean,
                     ean: ean.substring(0, 12),
@@ -109,7 +119,8 @@
                     ligne2_droite,
                     ligne3,
                     ligne4_gauche,
-                    ligne4_droite
+                    ligne4_droite,
+                    composition,
                 };
             }
 
@@ -188,7 +199,10 @@
                                                     </text>
                                                 </svg>
                                             }
-                                            {(formatted_data.ligne2_gauche == '' && formatted_data.ligne2_droite == '') ?
+                                            {(
+                                                formatted_data.ligne2_gauche == '' &&
+                                                formatted_data.ligne2_droite == ''
+                                            ) ?
                                                 <></> :
                                                 <svg viewBox="0 0 100 5">
                                                     <text class="keepspaces"
@@ -227,8 +241,12 @@
                                                     </text>
                                                 </svg>
                                             }
-                                            {(formatted_data.ligne4_gauche == '' && formatted_data.ligne4_droite == '') ?
-                                                <>&nbsp;</> :
+                                            {
+                                            (
+                                                formatted_data.ligne4_gauche == '' &&
+                                                formatted_data.ligne4_droite == ''
+                                            ) ?
+                                                null:
                                                 <svg viewBox="0 0 100 5">
                                                     <text class="keepspaces" width="100"
                                                         x="50%" y="50%" dominant-baseline="middle"
@@ -239,7 +257,18 @@
                                                     </text>
                                                 </svg>
                                             }
-
+                                            {formatted_data.composition.split("\n").map(composition_line =>
+                                                {
+                                                    return <svg viewBox="0 0 100 5">
+                                                        <text class="keepspaces" width="100"
+                                                            x="50%" y="50%" dominant-baseline="middle"
+                                                            text-anchor="middle" font-size="5" dy="0"
+                                                            textLength={(generateString(formatted_data.ligne4_gauche, formatted_data.ligne4_droite).length > 30) ? "100" : "auto"} lengthAdjust="spacing">
+                                                            {composition_line}
+                                                        </text>
+                                                    </svg>
+                                                }
+                                             )}
                                         </div>
                                     </div>
                                 </div>
@@ -285,6 +314,7 @@
                     "ligne3": "ligne3",
                     "ligne4_gauche": "ligne4_gauche",
                     "ligne4_droite": "ligne4_droite",
+                    "composition": "Composition"
                 }
                 return (
                     <div>
